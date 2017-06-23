@@ -49,7 +49,7 @@ function Player(props) {
                 {props.name}
             </div>
             <div className="player-score">
-               <Counter score={props.score} />
+               <Counter initialScore={props.score} />
             </div>
         </div>
     );
@@ -60,60 +60,70 @@ Player.propTypes = {
     score: PropTypes.number.isRequired
 }
 
+// var Counter = React.createClass({
+//     render: function() {
+//          return (
+//             <div className="counter">
+//                 <button className="counter-action decrement"> - </button>
+//                 <div className="counter-score">{this.props.score}</div>
+//                 <button className="counter-action increment"> + </button>
+//             </div>
+//         );
+//     }
+// });
 
-function Counter(props) {
-    return (
-        <div className="counter">
-            <button className="counter-action decrement"> - </button>
-            <div className="counter-score">{props.score}</div>
-            <button className="counter-action increment"> + </button>
-        </div>
-    );
+class Counter extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            score: this.props.initialScore
+        };
+
+        this.incrementScore = this.incrementScore.bind(this);
+        this.decrementScore = this.decrementScore.bind(this);
+    }
+
+    incrementScore(e) {
+        console.log('increment score', e);
+        console.log(this.state)
+        this.setState({
+            score: (this.state.score + 1)          
+        })
+    }
+
+    decrementScore(e) {
+        console.log('decrement score', e);
+        console.log(this.state)
+        this.setState({
+            score: (this.state.score - 1)          
+        })
+    }
+
+    render() {
+        return (
+            <div className="counter">
+                <button className="counter-action decrement" onClick={this.decrementScore}> - </button>
+                <div className="counter-score">{this.state.score}</div>
+                <button className="counter-action increment" onClick={this.incrementScore}> + </button>
+            </div>
+        );
+    }
 }
 
 Counter.propTypes = {
-    score: PropTypes.number.isRequired
+    initialScore: PropTypes.number.isRequired
 }
 
 function Application(props) {
     return (
         <div className="scoreboard">
-            {/*<div className="header">
-                <h1>{props.title}</h1>
-            </div>*/}
             <Header title={props.title} />
 
             <div className="players">
                 {props.players.map(function(player) {
                     return <Player key={player.id} name={player.name} score={player.score} />
                 })}
-                {/*<Player name="Jim Hoskins" score={31} />
-                <div className="player">
-                    <div className="player-name">
-                        Jim Hoskins
-                    </div>
-                    <div className="player-score">
-                        <div className="counter">
-                            <button className="counter-action decrement"> - </button>
-                            <div className="counter-score">31</div>
-                            <button className="counter-action increment"> + </button>
-                        </div>
-                    </div>
-                </div>*/}
-                
-                {/*<Player name="Andrew Chalkley" score={33} />
-                <div className="player">
-                    <div className="player-name">
-                        Andrew Chalklay
-                    </div>
-                    <div className="player-score">
-                        <div className="counter">
-                            <button className="counter-action decrement"> - </button>
-                            <div className="counter-score">43</div>
-                            <button className="counter-action increment"> + </button>
-                        </div>
-                    </div>
-                </div>*/}
             </div>
 
         </div>
