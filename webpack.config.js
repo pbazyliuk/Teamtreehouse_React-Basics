@@ -2,7 +2,7 @@
 
 module.exports = {
     //entry root Javascript file
-    entry: './app.js',
+    entry: './app.jsx',
 
 
     //output
@@ -19,7 +19,7 @@ module.exports = {
         loaders: [
             {
                 //regular expr match all files for *.js
-                test: /\.js$/,
+                test: /\.jsx$/,
                 //set exclude for node_modules
                 exclude: /node_modules/,
                 //run files through babel-loader
