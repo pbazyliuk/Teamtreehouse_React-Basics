@@ -1,3 +1,4 @@
+
 //Libs
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -6,7 +7,25 @@ import PropTypes from 'prop-types';
 //Css
 import './css/style.css';
 
-function Header(props) {
+var PLAYERS = [
+    { 
+        name: 'Jim Hoskins',
+        score: 31,
+        id: 1
+    },
+    { 
+        name: 'Andrew Chakley',
+        score: 35,
+        id: 2
+    },
+    { 
+        name: 'Alena Hooligan',
+        score: 42,
+        id: 3
+    }
+];
+
+function Header(props) { 
     return (
         <div className="header">
             <h1>{props.title}</h1>
@@ -65,8 +84,11 @@ function Application(props) {
             <Header title={props.title} />
 
             <div className="players">
-                <Player name="Jim Hoskins" score={31} />
-                {/*<div className="player">
+                {props.players.map(function(player) {
+                    return <Player key={player.id} name={player.name} score={player.score} />
+                })}
+                {/*<Player name="Jim Hoskins" score={31} />
+                <div className="player">
                     <div className="player-name">
                         Jim Hoskins
                     </div>
@@ -79,8 +101,8 @@ function Application(props) {
                     </div>
                 </div>*/}
                 
-                <Player name="Andrew Chalkley" score={33} />
-                {/*<div className="player">
+                {/*<Player name="Andrew Chalkley" score={33} />
+                <div className="player">
                     <div className="player-name">
                         Andrew Chalklay
                     </div>
@@ -98,17 +120,22 @@ function Application(props) {
     );
 }
 
-// Application.propTypes = {
-//     title: PropTypes.string,
-// };
+Application.propTypes = {
+    title: PropTypes.string,
+    players: PropTypes.arrayOf(PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        score: PropTypes.number.isRequired,
+        id: PropTypes.number.isRequired
+    })).isRequired
+};
 
-// Application.defaultProps = {
-//     title: "Scoreboard"
-// }
+Application.defaultProps = {
+    title: "Scoreboard"
+}
 
 
 
 ReactDOM.render(
-    <Application />,
+    <Application players={PLAYERS} />,
     document.getElementById('container')
 );
