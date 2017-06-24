@@ -49,7 +49,7 @@ function Player(props) {
                 {props.name}
             </div>
             <div className="player-score">
-               <Counter initialScore={props.score} />
+               <Counter score={props.score} onChange={props.onScoreChange}/>
             </div>
         </div>
     );
@@ -57,7 +57,8 @@ function Player(props) {
 
 Player.propTypes = {
     name: PropTypes.string.isRequired,
-    score: PropTypes.number.isRequired
+    score: PropTypes.number.isRequired,
+    onScoreChange: PropTypes.func.isRequired
 }
 
 // var Counter = React.createClass({
@@ -72,67 +73,121 @@ Player.propTypes = {
 //     }
 // });
 
-class Counter extends React.Component {
+// class Counter extends React.Component {
 
-    constructor(props) {
+//     constructor(props) {
+//         super(props);
+//         this.state = {
+//             score: this.props.initialScore
+//         };
+
+//         this.incrementScore = this.incrementScore.bind(this);
+//         this.decrementScore = this.decrementScore.bind(this);
+//     }
+
+//     incrementScore(e) {
+//         console.log('increment score', e);
+//         console.log(this.state)
+//         this.setState({
+//             score: (this.state.score + 1)          
+//         })
+//     }
+
+//     decrementScore(e) {
+//         console.log('decrement score', e);
+//         console.log(this.state)
+//         this.setState({
+//             score: (this.state.score - 1)          
+//         })
+//     }
+
+//     render() {
+//         return (
+//             <div className="counter">
+//                 <button className="counter-action decrement" onClick={this.decrementScore}> - </button>
+//                 <div className="counter-score">{this.state.score}</div>
+//                 <button className="counter-action increment" onClick={this.incrementScore}> + </button>
+//             </div>
+//         );
+//     }
+// }
+
+function Counter(props) {
+    return (
+        <div className="counter">
+            <button className="counter-action decrement" onClick={function() {props.onChange(-1)}} > - </button>
+            <div className="counter-score">{props.score}</div>
+            <button className="counter-action increment" onClick={function() {props.onChange(1)}} > + </button>
+        </div>
+    );
+}
+
+Counter.propTypes = {
+    score: PropTypes.number.isRequired,
+    onChange: PropTypes.func.isRequired
+}
+
+// Counter.propTypes = {
+//     initialScore: PropTypes.number.isRequired
+// }
+
+
+class Application extends React.Component {
+     constructor(props) {
         super(props);
         this.state = {
-            score: this.props.initialScore
+            players: this.props.initialPlayers,
         };
 
-        this.incrementScore = this.incrementScore.bind(this);
-        this.decrementScore = this.decrementScore.bind(this);
     }
 
-    incrementScore(e) {
-        console.log('increment score', e);
-        console.log(this.state)
-        this.setState({
-            score: (this.state.score + 1)          
-        })
-    }
-
-    decrementScore(e) {
-        console.log('decrement score', e);
-        console.log(this.state)
-        this.setState({
-            score: (this.state.score - 1)          
-        })
+    onScoreChange(index, delta) {
+        console.log('onScoreChange', index, delta);
+        this.state.players[index].score += delta;
+        this.setState(this.state);
     }
 
     render() {
         return (
-            <div className="counter">
-                <button className="counter-action decrement" onClick={this.decrementScore}> - </button>
-                <div className="counter-score">{this.state.score}</div>
-                <button className="counter-action increment" onClick={this.incrementScore}> + </button>
+            <div className="scoreboard">
+                <Header title={this.props.title} />
+
+                <div className="players">
+                    {this.state.players.map((player, index) => {
+                        return (
+                            <Player 
+                                key={player.id} 
+                                name={player.name} 
+                                score={player.score} 
+                                onScoreChange={(delta) => {this.onScoreChange(index, delta)}} 
+                            />
+                        )
+                    })}
+                </div>
+
             </div>
         );
     }
 }
 
-Counter.propTypes = {
-    initialScore: PropTypes.number.isRequired
-}
+// function Application(props) {
+//     return (
+//         <div className="scoreboard">
+//             <Header title={props.title} />
 
-function Application(props) {
-    return (
-        <div className="scoreboard">
-            <Header title={props.title} />
+//             <div className="players">
+//                 {props.players.map(function(player) {
+//                     return <Player key={player.id} name={player.name} score={player.score} />
+//                 })}
+//             </div>
 
-            <div className="players">
-                {props.players.map(function(player) {
-                    return <Player key={player.id} name={player.name} score={player.score} />
-                })}
-            </div>
-
-        </div>
-    );
-}
+//         </div>
+//     );
+// }
 
 Application.propTypes = {
     title: PropTypes.string,
-    players: PropTypes.arrayOf(PropTypes.shape({
+    initialPlayers: PropTypes.arrayOf(PropTypes.shape({
         name: PropTypes.string.isRequired,
         score: PropTypes.number.isRequired,
         id: PropTypes.number.isRequired
@@ -146,6 +201,6 @@ Application.defaultProps = {
 
 
 ReactDOM.render(
-    <Application players={PLAYERS} />,
+    <Application initialPlayers={PLAYERS} />,
     document.getElementById('container')
 );
