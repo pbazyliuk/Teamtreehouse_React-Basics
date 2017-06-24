@@ -7,6 +7,8 @@ import PropTypes from 'prop-types';
 //Css
 import './css/style.css';
 
+var nextId = 4;
+
 var PLAYERS = [
     { 
         name: 'Jim Hoskins',
@@ -24,6 +26,50 @@ var PLAYERS = [
         id: 3
     }
 ];
+
+class AddPlayerForm extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {name: ''};
+
+        this.onNameChange = this.onNameChange.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
+    }
+
+    onNameChange(e) {
+        console.log('onNameChange', e.target.value);
+        this.setState({name: e.target.value});
+        
+    }
+
+    onSubmit(e) {
+        e.preventDefault();
+
+        this.props.onAdd(this.state.name);
+        this.setState({name: ''})
+    }
+
+    render() {
+        return (
+            <div className="add-player-form">
+                <form action="" onSubmit={this.onSubmit}>
+                    <input type="text" value={this.state.name} onChange={this.onNameChange}/>
+                    <input type="submit" value="Add Player" />
+                </form>
+            </div>
+        )
+    }
+}
+
+AddPlayerForm.propTypes = {
+    onAdd: PropTypes.func.isRequired,
+    name: PropTypes.string.isRequired
+}
+
+AddPlayerForm.defaultProps = {
+    name: "Scoreboard"
+}
+
 
 function Stats(props) {
     var totalPlayers = props.players.length;
@@ -75,6 +121,7 @@ function Player(props) {
     return (
         <div className="player">
             <div className="player-name">
+                <a className="remove-player" onClick={props.onRemove}>X</a>
                 {props.name}
             </div>
             <div className="player-score">
@@ -87,7 +134,8 @@ function Player(props) {
 Player.propTypes = {
     name: PropTypes.string.isRequired,
     score: PropTypes.number.isRequired,
-    onScoreChange: PropTypes.func.isRequired
+    onScoreChange: PropTypes.func.isRequired,
+    onRemove: PropTypes.func.isRequired
 }
 
 
@@ -108,17 +156,36 @@ Counter.propTypes = {
 
 
 class Application extends React.Component {
-     constructor(props) {
+    constructor(props) {
         super(props);
         this.state = {
             players: this.props.initialPlayers,
         };
 
+        this.onPlayerAdd = this.onPlayerAdd.bind(this);
+        this.onRemovePlayer = this.onRemovePlayer.bind(this);
     }
 
     onScoreChange(index, delta) {
         console.log('onScoreChange', index, delta);
         this.state.players[index].score += delta;
+        this.setState(this.state);
+    }
+
+    onPlayerAdd(name) {
+        console.log('Player added:', name);
+        this.state.players.push({
+            name: name,
+            score: 0,
+            id: nextId
+        });
+        this.setState(this.state);
+        nextId += 1;
+    }
+
+    onRemovePlayer(index) {
+        console.log(index);
+        this.state.players.splice(index, 1);
         this.setState(this.state);
     }
 
@@ -134,12 +201,15 @@ class Application extends React.Component {
                                 key={player.id} 
                                 name={player.name} 
                                 score={player.score} 
-                                onScoreChange={(delta) => {this.onScoreChange(index, delta)}} 
+                                onScoreChange={(delta) => {this.onScoreChange(index, delta)}}
+                                onRemove={() => {
+                                   this.onRemovePlayer(index)
+                                }}
                             />
                         )
                     })}
                 </div>
-
+                <AddPlayerForm onAdd={this.onPlayerAdd} />
             </div>
         );
     }
